@@ -1,4 +1,5 @@
 from tkinter import *
+from PIL import Image, ImageTk
 
 BUTTON_LARGURA = "4"
 BUTTON_ALTURA = "2"
@@ -9,6 +10,7 @@ class Window(Frame):
         Frame.__init__(self, master)                 
         self.master = master
         self.init_window()
+        self.init_image()
         self.init_button()
         self.init_chat()
 
@@ -17,33 +19,38 @@ class Window(Frame):
         # changing the title of our master widget      
         self.master.title("Jogo Chinês")
         # allowing the widget to take the full space of the root window
-        self.pack(fill=BOTH, expand=1)
+        self.pack()
         #criar o canvas das linhas do jogo 
         #background = Canvas(self, height=640, width=480, bg="yellow") 
         #background.pack()
     
     def init_button(self):
         # creating a button instance
+        self.loadimageV = PhotoImage(file="bolaV.png")
+        self.loadimageA = PhotoImage(file="bolaA.png")
+        self.loadimageB = PhotoImage(file="bolaBr.png")
         #Link para criar botões arredondados : https://stackoverflow.com/questions/42579927/rounded-button-tkinter-python
-        botaoV1 = Button(self, text="", width=BUTTON_LARGURA, height=BUTTON_ALTURA, bg="red") #Adicionar comando com quitButton = Button(self, bg="x", ->command= helloCallBack <-)
-        botaoV2 = Button(self, text="", width=BUTTON_LARGURA, height=BUTTON_ALTURA, bg="red")
-        botaoA1 = Button(self, text="", width=BUTTON_LARGURA, height=BUTTON_ALTURA, bg="blue")
-        botaoA2 = Button(self, text="", width=BUTTON_LARGURA, height=BUTTON_ALTURA, bg="blue")
-        botaoBranco = Button(self, text="", width=BUTTON_LARGURA, height=BUTTON_ALTURA, bg="white")
+        botaoV1 = Button(self, image=self.loadimageV, border=0, bg="white") #Adicionar comando com quitButton = Button(self, bg="x", ->command= helloCallBack <-)
+        botaoV2 = Button(self, image=self.loadimageV, border=0, bg="white")
+        botaoA1 = Button(self, image=self.loadimageA, border=0, bg="white")
+        botaoA2 = Button(self, image=self.loadimageA, border=0, bg="white")
+        botaoBranco = Button(self, image=self.loadimageB, border=0, bg="white")
         # placing the button on my window
-        botaoV1.place(x=100, y=20)
-        botaoV2.place(x=380, y=20)
-        botaoA1.place(x=100, y=220)
-        botaoA2.place(x=380, y=220)
-        botaoBranco.place(x=240, y=120)
+        botaoV1.place(x=5, y=6)
+        botaoV2.place(x=300, y=6)
+        botaoA1.place(x=5, y=295)
+        botaoA2.place(x=300, y=295)
+        botaoBranco.place(x=155, y=142)
 
     def init_chat(self):
-        self.messages = Text(self, height="10")
+        self.messages = Text(self, height="23", width="49")
         self.input_user = StringVar()
         self.input_field = Entry(self, text=self.input_user)
-        self.input_field.pack(side=BOTTOM, fill=X)
-        self.messages.pack(side=BOTTOM)
+        self.label_user = Label(self, text="Chat: ")
         self.input_field.bind("<Return>", self.send_message)
+        self.messages.grid(row=0,column=1, columnspan=2, sticky=NW)
+        self.label_user.grid(row=0,column=1, sticky=S+W)
+        self.input_field.grid(row=0,column=2, ipadx=150, sticky=S)
 
     def send_message(self,event):
         input_get = self.input_field.get()
@@ -51,9 +58,19 @@ class Window(Frame):
         self.messages.insert(INSERT, '%s\n' % input_get)
         self.input_user.set('')
         return "break"
+    
+    def init_image(self):
+        load = Image.open("pong02.jpg")
+        render = ImageTk.PhotoImage(load)
+
+        # labels can be text or images
+        img = Label(self, image=render)
+        img.image = render
+        img.grid(row=0,column=0)
+        
 
 root = Tk()
 #size of the window
-root.geometry("640x480")
+root.geometry("800x400")
 app = Window(root)
 root.mainloop()  
