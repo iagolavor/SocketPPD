@@ -1,21 +1,13 @@
 from tkinter import *
 from PIL import Image, ImageTk
 
-BUTTON_LARGURA = "4"
-BUTTON_ALTURA = "2"
-
 class Window(Frame):
 
     def __init__(self, master=None):
         Frame.__init__(self, master)   
         self.buttons_list = []
-        self.mapa = {
-            1: "Vermelho1",
-            2: "Azul1",
-            3: "Branco",
-            4: "Vermelho2",
-            5: "Azul2"
-        }          
+        self.mapa = ["V1", "A1", "Branco", "V2", "A2"]
+        self.whitebtn = 2        
         self.master = master
         self.init_window()
         self.init_image()
@@ -39,20 +31,16 @@ class Window(Frame):
         self.loadimageB = PhotoImage(file="bolaBr.png")
         #Link para criar botões arredondados : https://stackoverflow.com/questions/42579927/rounded-button-tkinter-python
         botaoV1 = Button(self, image=self.loadimageV, border=0, bg="white") #Adicionar comando com quitButton = Button(self, bg="x", ->command= helloCallBack <-)
-        self.buttons_list.append(botaoV1)
-        botaoV2 = Button(self, image=self.loadimageV, border=0, bg="white")
-        self.buttons_list.append(botaoV2)
         botaoA1 = Button(self, image=self.loadimageA, border=0, bg="white")
-        self.buttons_list.append(botaoA1)
-        botaoA2 = Button(self, image=self.loadimageA, border=0, bg="white")
-        self.buttons_list.append(botaoA2)
         botaoBranco = Button(self, image=self.loadimageB, border=0, bg="white")
-        self.buttons_list.append(botaoBranco)
+        botaoV2 = Button(self, image=self.loadimageV, border=0, bg="white")
+        botaoA2 = Button(self, image=self.loadimageA, border=0, bg="white")
+        self.buttons_list.extend([botaoV1, botaoA1, botaoBranco, botaoV2, botaoA2])
         botaoV1.bind("<Button-1>", self.movement)
         botaoV2.bind("<Button-1>", self.movement)
         botaoA1.bind("<Button-1>", self.movement)
         botaoA2.bind("<Button-1>", self.movement)
-        botaoBranco.bind("<Button-1>", self.movement)
+        #botaoBranco.bind("<Button-1>", self.movement)
         # placing the button on my window
         botaoV1.place(x=5, y=6)
         botaoV2.place(x=300, y=6)
@@ -90,10 +78,22 @@ class Window(Frame):
         print(event)
         btn = event.widget
         btn_place = self.buttons_list.index(btn)
-        
-        btn.config(image=self.loadimageB, stat="disabled")
+        btn.config(image=self.loadimageB)
+        if(btn_place == self.mapa.index("V1") or btn_place == self.mapa.index("V2")):
+            self.buttons_list[self.whitebtn].config(image=self.loadimageV)
+            #Atualizando a lista dos botoes, e em seguida, a lista do mapa.
+            #self.buttons_list[self.whitebtn], self.buttons_list[btn_place] = self.buttons_list[btn_place], self.buttons_list[self.whitebtn]
+            self.mapa[self.whitebtn], self.mapa[btn_place] = self.mapa[btn_place], self.mapa[self.whitebtn]
+            print(self.mapa)
+            self.whitebtn = btn_place
+            #Disabilitar os botões vermelhos
+            self.buttons_list[self.mapa.index("V1")].config(state = "disabled")
+            self.buttons_list[self.mapa.index("V2")].config(state = "disabled")
+        else:
+            self.buttons_list[self.whitebtn].config(image=self.loadimageA)
+        """btn.config(image=self.loadimageB)
         self.buttons_list[self.whitebtn].config(image=self.loadimageV)
-        self.whitebtn = btn_place
+        self.whitebtn = btn_place"""
         print(self.buttons_list[4])
         print(self.buttons_list.index(btn))
         print(self.buttons_list)
