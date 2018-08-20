@@ -7,13 +7,21 @@ BUTTON_ALTURA = "2"
 class Window(Frame):
 
     def __init__(self, master=None):
-        Frame.__init__(self, master)                 
+        Frame.__init__(self, master)   
+        self.buttons_list = []
+        self.mapa = {
+            1: "Vermelho1",
+            2: "Azul1",
+            3: "Branco",
+            4: "Vermelho2",
+            5: "Azul2"
+        }          
         self.master = master
         self.init_window()
         self.init_image()
         self.init_button()
         self.init_chat()
-
+        
     #Creation of init_window
     def init_window(self):
         # changing the title of our master widget      
@@ -31,10 +39,20 @@ class Window(Frame):
         self.loadimageB = PhotoImage(file="bolaBr.png")
         #Link para criar botões arredondados : https://stackoverflow.com/questions/42579927/rounded-button-tkinter-python
         botaoV1 = Button(self, image=self.loadimageV, border=0, bg="white") #Adicionar comando com quitButton = Button(self, bg="x", ->command= helloCallBack <-)
+        self.buttons_list.append(botaoV1)
         botaoV2 = Button(self, image=self.loadimageV, border=0, bg="white")
+        self.buttons_list.append(botaoV2)
         botaoA1 = Button(self, image=self.loadimageA, border=0, bg="white")
+        self.buttons_list.append(botaoA1)
         botaoA2 = Button(self, image=self.loadimageA, border=0, bg="white")
+        self.buttons_list.append(botaoA2)
         botaoBranco = Button(self, image=self.loadimageB, border=0, bg="white")
+        self.buttons_list.append(botaoBranco)
+        botaoV1.bind("<Button-1>", self.movement)
+        botaoV2.bind("<Button-1>", self.movement)
+        botaoA1.bind("<Button-1>", self.movement)
+        botaoA2.bind("<Button-1>", self.movement)
+        botaoBranco.bind("<Button-1>", self.movement)
         # placing the button on my window
         botaoV1.place(x=5, y=6)
         botaoV2.place(x=300, y=6)
@@ -67,6 +85,20 @@ class Window(Frame):
         img = Label(self, image=render)
         img.image = render
         img.grid(row=0,column=0)
+    
+    def movement(self,event):
+        print(event)
+        btn = event.widget
+        btn_place = self.buttons_list.index(btn)
+        
+        btn.config(image=self.loadimageB, stat="disabled")
+        self.buttons_list[self.whitebtn].config(image=self.loadimageV)
+        self.whitebtn = btn_place
+        print(self.buttons_list[4])
+        print(self.buttons_list.index(btn))
+        print(self.buttons_list)
+
+
         
 
 root = Tk()
