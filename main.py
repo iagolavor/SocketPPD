@@ -7,13 +7,13 @@ class Window(Frame):
         Frame.__init__(self, master)   
         self.buttons_list = []
         self.mapa = ["V1", "A1", "Branco", "V2", "A2"]
-        self.switcher = {
+        '''self.switcher = {
             0: pos_0,
             1: pos_1,
             2: pos_2,
             3: pos_3,
             4: pos_4
-        }
+        }'''
         self.whitebtn = 2        
         self.master = master
         self.init_window()
@@ -87,13 +87,169 @@ class Window(Frame):
         img.grid(row=0,column=0)
     
     def movement(self,event):
+        #Chama a função switcher para escolher qual botao rodar
+        btn = event.widget
+        btn_place = self.buttons_list.index(btn)
+        self.switcher(btn_place)
+
+    def switcher(self,argument):
+        #De acordo com o argumento dado(lugar do botao do evento), chama a função apropriada
+        switch = {
+            0: self.pos_0,
+            1: self.pos_1,
+            2: self.pos_2,
+            3: self.pos_3,
+            4: self.pos_4
+        }
+        func = switch.get(argument, lambda: "Invalid")
+        func()
+    
+    def pos_0(self):
+        if(self.buttons_list[0].image == self.loadimageV):
+            if(self.buttons_list[1].image == self.loadimageB):
+                self.buttons_list[0].config(image = self.loadimageB)
+                self.buttons_list[0].image = self.loadimageB
+                self.buttons_list[1].config(image = self.loadimageV)
+                self.buttons_list[0].image = self.loadimageV
+            elif(self.buttons_list[2].image == self.loadimageB):
+                self.buttons_list[0].config(image = self.loadimageB)
+                self.buttons_list[0].image = self.loadimageB
+                self.buttons_list[2].config(image = self.loadimageV)
+                self.buttons_list[2].image = self.loadimageV
+        elif(self.buttons_list[0].image == self.loadimageA):
+            if(self.buttons_list[1].image == self.loadimageB):
+                    self.buttons_list[0].config(image = self.loadimageB)
+                    self.buttons_list[0].image = self.loadimageB
+                    self.buttons_list[1].config(image = self.loadimageA)
+                    self.buttons_list[1].image = self.loadimageA
+            elif(self.buttons_list[2].image == self.loadimageB):
+                    self.buttons_list[0].config(image = self.loadimageB)
+                    self.buttons_list[0].image = self.loadimageB
+                    self.buttons_list[2].config(image = self.loadimageA)
+                    self.buttons_list[2].image = self.loadimageA
+        
+    def pos_1(self):
+        if(self.buttons_list[1].image == self.loadimageV):
+            if(self.buttons_list[0].image == self.loadimageB):
+                self.buttons_list[1].config(image = self.loadimageB)
+                self.buttons_list[1].image = self.loadimageB
+                self.buttons_list[0].config(image = self.loadimageV)
+                self.buttons_list[0].image = self.loadimageV
+            elif(self.buttons_list[2].image == self.loadimageB):
+                self.buttons_list[1].config(image = self.loadimageB)
+                self.buttons_list[1].image = self.loadimageB
+                self.buttons_list[2].config(image = self.loadimageV)
+                self.buttons_list[2].image = self.loadimageV
+            elif(self.buttons_list[4].image == self.loadimageB):
+                self.buttons_list[1].config(image = self.loadimageB)
+                self.buttons_list[1].image = self.loadimageB
+                self.buttons_list[4].config(image = self.loadimageV)
+                self.buttons_list[4].image = self.loadimageV
+        elif(self.buttons_list[1].image == self.loadimageA):
+            if(self.buttons_list[0].image == self.loadimageB):
+                self.buttons_list[1].config(image = self.loadimageB)
+                self.buttons_list[1].image = self.loadimageB
+                self.buttons_list[0].config(image = self.loadimageA)
+                self.buttons_list[0].image = self.loadimageA
+            elif(self.buttons_list[2].image == self.loadimageB):
+                self.buttons_list[1].config(image = self.loadimageB)
+                self.buttons_list[1].image = self.loadimageB
+                self.buttons_list[2].config(image = self.loadimageA)
+                self.buttons_list[2].image = self.loadimageA
+            elif(self.buttons_list[4].image == self.loadimageB):
+                self.buttons_list[1].config(image = self.loadimageB)
+                self.buttons_list[1].image = self.loadimageB
+                self.buttons_list[4].config(image = self.loadimageA)
+                self.buttons_list[4].image = self.loadimageA
+        
+    def pos_2(self):
+        if(self.buttons_list[2].image == self.loadimageV):
+            if(self.buttons_list[0].image == self.loadimageB):
+                self.buttons_list[2].config(image = self.loadimageB)
+                self.buttons_list[2].image = self.loadimageB
+                self.buttons_list[0].config(image = self.loadimageV)
+                self.buttons_list[0].image = self.loadimageV
+            elif(self.buttons_list[1].image == self.loadimageB):
+                self.buttons_list[2].config(image = self.loadimageB)
+                self.buttons_list[2].image = self.loadimageB
+                self.buttons_list[1].config(image = self.loadimageV)
+                self.buttons_list[1].image = self.loadimageV
+            elif(self.buttons_list[3].image == self.loadimageB):
+                self.buttons_list[2].config(image = self.loadimageB)
+                self.buttons_list[2].image = self.loadimageB
+                self.buttons_list[3].config(image = self.loadimageV)
+                self.buttons_list[3].image = self.loadimageV
+            elif(self.buttons_list[4].image == self.loadimageB):
+                self.buttons_list[2].config(image = self.loadimageB)
+                self.buttons_list[2].image = self.loadimageB
+                self.buttons_list[4].config(image = self.loadimageV)
+                self.buttons_list[4].image = self.loadimageV
+        elif(self.buttons_list[2].image == self.loadimageA):
+            if(self.buttons_list[0].image == self.loadimageB):
+                self.buttons_list[2].config(image = self.loadimageB)
+                self.buttons_list[2].image = self.loadimageB
+                self.buttons_list[0].config(image = self.loadimageA)
+                self.buttons_list[0].image = self.loadimageA
+            elif(self.buttons_list[1].image == self.loadimageB):
+                self.buttons_list[2].config(image = self.loadimageB)
+                self.buttons_list[2].image = self.loadimageB
+                self.buttons_list[1].config(image = self.loadimageA)
+                self.buttons_list[1].image = self.loadimageA
+            elif(self.buttons_list[3].image == self.loadimageB):
+                self.buttons_list[2].config(image = self.loadimageB)
+                self.buttons_list[2].image = self.loadimageB
+                self.buttons_list[3].config(image = self.loadimageA)
+                self.buttons_list[3].image = self.loadimageA
+            elif(self.buttons_list[4].image == self.loadimageB):
+                self.buttons_list[2].config(image = self.loadimageB)
+                self.buttons_list[2].image = self.loadimageB
+                self.buttons_list[4].config(image = self.loadimageA)
+                self.buttons_list[4].image = self.loadimageA
+    def pos_3(self):
+        if(self.buttons_list[3].image == self.loadimageV):
+            if(self.buttons_list[2].image == self.loadimageB):
+                self.buttons_list[3].config(image = self.loadimageB)
+                self.buttons_list[2].config(image = self.loadimageV)
+            elif(self.buttons_list[4].image == self.loadimageB):
+                self.buttons_list[3].config(image = self.loadimageB)
+                self.buttons_list[4].config(image = self.loadimageV)
+        elif(self.buttons_list[3].image == self.loadimageA):
+            if(self.buttons_list[2].image == self.loadimageB):
+                self.buttons_list[3].config(image = self.loadimageB)
+                self.buttons_list[2].config(image = self.loadimageA)
+            elif(self.buttons_list[4].image == self.loadimageB):
+                self.buttons_list[3].config(image = self.loadimageB)
+                self.buttons_list[4].config(image = self.loadimageA)
+        
+    def pos_4(self):
+        if(self.buttons_list[4].image == self.loadimageV):
+            if(self.buttons_list[1].image == self.loadimageB):
+                self.buttons_list[4].config(image = self.loadimageB)
+                self.buttons_list[1].config(image = self.loadimageV)
+            elif(self.buttons_list[2].image == self.loadimageB):
+                self.buttons_list[4].config(image = self.loadimageB)
+                self.buttons_list[2].config(image = self.loadimageV)
+            elif(self.buttons_list[3].image == self.loadimageB):
+                self.buttons_list[4].config(image = self.loadimageB)
+                self.buttons_list[3].config(image = self.loadimageV)
+        elif(self.buttons_list[4].image == self.loadimageA):
+            if(self.buttons_list[1].image == self.loadimageB):
+                self.buttons_list[4].config(image = self.loadimageB)
+                self.buttons_list[1].config(image = self.loadimageA)
+            elif(self.buttons_list[2].image == self.loadimageB):
+                self.buttons_list[4].config(image = self.loadimageB)
+                self.buttons_list[2].config(image = self.loadimageA)
+            elif(self.buttons_list[3].image == self.loadimageB):
+                self.buttons_list[4].config(image = self.loadimageB)
+                self.buttons_list[3].config(image = self.loadimageA)
+
+"""def movement(self,event):
         print(event)
         btn = event.widget
         print(btn.image)
         if(btn.image == self.loadimageV):
             print('pyimage 1 = vermelho')
         btn_place = self.buttons_list.index(btn)
-        if(btn_place == 0 and btn.image == self.loadimageV):
         btn.config(image=self.loadimageB)
         if(btn_place == self.mapa.index("V1") or btn_place == self.mapa.index("V2")):
             self.buttons_list[self.whitebtn].config(image=self.loadimageV)
@@ -107,102 +263,13 @@ class Window(Frame):
             self.buttons_list[self.mapa.index("V2")].config(state = "disabled")
         else:
             self.buttons_list[self.whitebtn].config(image=self.loadimageA)
-        """btn.config(image=self.loadimageB)
+        btn.config(image=self.loadimageB)
         self.buttons_list[self.whitebtn].config(image=self.loadimageV)
-        self.whitebtn = btn_place"""
+        self.whitebtn = btn_place
         print(self.buttons_list[4])
         print(self.buttons_list.index(btn))
-        print(self.buttons_list)
+        print(self.buttons_list)"""
 
-        def can_move(self,event):
-            btn = event.widget
-            btn_place = self.buttons_list.index(btn)
-        
-        def pos_0(argument):
-            if(self.buttons_list[0].image == self.loadimageV):
-                if(self.buttons_list[1].image == self.loadimageB):
-                    self.button_list[0].config(image = self.loadimageB)
-                    self.button_list[1].config(image = self.loadimageV)
-                elif(self.buttons_list[2].image == self.loadimageB):
-                    self.button_list[0].config(image = self.loadimageB)
-                    self.button_list[2].config(image = self.loadimageV)
-            elif(self.buttons_list[0].image == self.loadimageA):
-                if(self.buttons_list[1].image == self.loadimageB):
-                    self.buttons_list[0].config(image = self.loadimageB)
-                    self.buttons_list[1].config(image = self.loadimageA)
-                elif(self.buttons_list[2].image == self.loadimageB):
-                    self.button_list[0].config(image = self.loadimageB)
-                    self.button_list[2].config(image = self.loadimageA)
-        
-        def pos_1():
-            if(self.buttons_list[1].image == self.loadimageV):
-                if(self.buttons_list[0].image == self.loadimageB):
-                    self.button_list[1].config(image = self.loadimageB)
-                    self.button_list[0].config(image = self.loadimageV)
-                elif(self.buttons_list[2].image == self.loadimageB):
-                    self.button_list[1].config(image = self.loadimageB)
-                    self.button_list[2].config(image = self.loadimageV)
-                elif(self.buttons_list[4].image == self.loadimageB):
-                    self.buttons_list[1].config(image = self.loadimageB)
-                    self.buttons_list[4].config(image = self.loadimageV)
-            elif(self.buttons_list[1].image == self.loadimageA):
-                if(self.buttons_list[0].image == self.loadimageB):
-                    self.buttons_list[1].config(image = self.loadimageB)
-                    self.buttons_list[0].config(image = self.loadimageA)
-                elif(self.buttons_list[2].image == self.loadimageB):
-                    self.button_list[1].config(image = self.loadimageB)
-                    self.button_list[2].config(image = self.loadimageA)
-                elif(self.buttons_list[4].image == self.loadimageB):
-                    self.buttons_list[1].config(image = self.loadimageB)
-                    self.buttons_list[4].config(image = self.loadimageA)
-        
-        def pos_2():
-            if(self.buttons_list[2].image == self.loadimageV):
-                if(self.buttons_list[0].image == self.loadimageB):
-                    self.button_list[2].config(image = self.loadimageB)
-                    self.button_list[0].config(image = self.loadimageV)
-                elif(self.buttons_list[1].image == self.loadimageB):
-                    self.button_list[2].config(image = self.loadimageB)
-                    self.button_list[1].config(image = self.loadimageV)
-                elif(self.buttons_list[3].image == self.loadimageB):
-                    self.buttons_list[2].config(image = self.loadimageB)
-                    self.buttons_list[3].config(image = self.loadimageV)
-                elif(self.buttons_list[4].image == self.loadimageB):
-                    self.buttons_list[2].config(image = self.loadimageB)
-                    self.buttons_list[4].config(image = self.loadimageV)
-            elif(self.buttons_list[2].image == self.loadimageA):
-                if(self.buttons_list[0].image == self.loadimageB):
-                    self.buttons_list[2].config(image = self.loadimageB)
-                    self.buttons_list[0].config(image = self.loadimageA)
-                elif(self.buttons_list[1].image == self.loadimageB):
-                    self.button_list[2].config(image = self.loadimageB)
-                    self.button_list[1].config(image = self.loadimageA)
-                elif(self.buttons_list[3].image == self.loadimageB):
-                    self.buttons_list[2].config(image = self.loadimageB)
-                    self.buttons_list[3].config(image = self.loadimageA)
-                elif(self.buttons_list[4].image == self.loadimageB):
-                    self.buttons_list[2].config(image = self.loadimageB)
-                    self.buttons_list[4].config(image = self.loadimageA)
-        def pos_1():
-            if(self.buttons_list[3].image == self.loadimageV):
-                if(self.buttons_list[2].image == self.loadimageB):
-                    self.button_list[3].config(image = self.loadimageB)
-                    self.button_list[2].config(image = self.loadimageV)
-                elif(self.buttons_list[4].image == self.loadimageB):
-                    self.button_list[3].config(image = self.loadimageB)
-                    self.button_list[4].config(image = self.loadimageV)
-            elif(self.buttons_list[3].image == self.loadimageA):
-                if(self.buttons_list[2].image == self.loadimageB):
-                    self.buttons_list[3].config(image = self.loadimageB)
-                    self.buttons_list[2].config(image = self.loadimageA)
-                elif(self.buttons_list[4].image == self.loadimageB):
-                    self.button_list[3].config(image = self.loadimageB)
-                    self.button_list[4].config(image = self.loadimageA)
-
-
-            
-
-        
 
 root = Tk()
 #size of the window
