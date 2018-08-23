@@ -6,14 +6,6 @@ class Window(Frame):
     def __init__(self, master=None):
         Frame.__init__(self, master)   
         self.buttons_list = []
-        self.mapa = ["V1", "A1", "Branco", "V2", "A2"]
-        '''self.switcher = {
-            0: pos_0,
-            1: pos_1,
-            2: pos_2,
-            3: pos_3,
-            4: pos_4
-        }'''
         self.whitebtn = 2        
         self.master = master
         self.init_window()
@@ -27,9 +19,6 @@ class Window(Frame):
         self.master.title("Jogo Chinês")
         # allowing the widget to take the full space of the root window
         self.pack()
-        #criar o canvas das linhas do jogo 
-        #background = Canvas(self, height=640, width=480, bg="yellow") 
-        #background.pack()
     
     def init_button(self):
         # creating a button instance
@@ -52,6 +41,7 @@ class Window(Frame):
         botaoV2.bind("<Button-1>", self.movement)
         botaoA1.bind("<Button-1>", self.movement)
         botaoA2.bind("<Button-1>", self.movement)
+        botaoBranco.bind("<Button-1>", self.movement)
         #botaoBranco.bind("<Button-1>", self.movement)
         # placing the button on my window
         botaoV1.place(x=5, y=6)
@@ -209,67 +199,59 @@ class Window(Frame):
         if(self.buttons_list[3].image == self.loadimageV):
             if(self.buttons_list[2].image == self.loadimageB):
                 self.buttons_list[3].config(image = self.loadimageB)
+                self.buttons_list[3].image = self.loadimageB
                 self.buttons_list[2].config(image = self.loadimageV)
+                self.buttons_list[2].image = self.loadimageV
             elif(self.buttons_list[4].image == self.loadimageB):
                 self.buttons_list[3].config(image = self.loadimageB)
+                self.buttons_list[3].image = self.loadimageB
                 self.buttons_list[4].config(image = self.loadimageV)
+                self.buttons_list[4].image = self.loadimageV
         elif(self.buttons_list[3].image == self.loadimageA):
             if(self.buttons_list[2].image == self.loadimageB):
                 self.buttons_list[3].config(image = self.loadimageB)
+                self.buttons_list[3].image = self.loadimageB
                 self.buttons_list[2].config(image = self.loadimageA)
+                self.buttons_list[2].image = self.loadimageA
             elif(self.buttons_list[4].image == self.loadimageB):
                 self.buttons_list[3].config(image = self.loadimageB)
+                self.buttons_list[3].image = self.loadimageB
                 self.buttons_list[4].config(image = self.loadimageA)
+                self.buttons_list[4].image = self.loadimageA
         
     def pos_4(self):
         if(self.buttons_list[4].image == self.loadimageV):
             if(self.buttons_list[1].image == self.loadimageB):
                 self.buttons_list[4].config(image = self.loadimageB)
+                self.buttons_list[4].image = self.loadimageB
                 self.buttons_list[1].config(image = self.loadimageV)
+                self.buttons_list[1].image = self.loadimageV
             elif(self.buttons_list[2].image == self.loadimageB):
                 self.buttons_list[4].config(image = self.loadimageB)
+                self.buttons_list[4].image = self.loadimageB
                 self.buttons_list[2].config(image = self.loadimageV)
+                self.buttons_list[2].image = self.loadimageV
             elif(self.buttons_list[3].image == self.loadimageB):
                 self.buttons_list[4].config(image = self.loadimageB)
+                self.buttons_list[4].image = self.loadimageB
                 self.buttons_list[3].config(image = self.loadimageV)
+                self.buttons_list[3].image = self.loadimageV
         elif(self.buttons_list[4].image == self.loadimageA):
             if(self.buttons_list[1].image == self.loadimageB):
                 self.buttons_list[4].config(image = self.loadimageB)
+                self.buttons_list[4].image = self.loadimageB
                 self.buttons_list[1].config(image = self.loadimageA)
+                self.buttons_list[1].image = self.loadimageA
             elif(self.buttons_list[2].image == self.loadimageB):
                 self.buttons_list[4].config(image = self.loadimageB)
+                self.buttons_list[4].image = self.loadimageB
                 self.buttons_list[2].config(image = self.loadimageA)
+                self.buttons_list[2].image = self.loadimageA
             elif(self.buttons_list[3].image == self.loadimageB):
                 self.buttons_list[4].config(image = self.loadimageB)
+                self.buttons_list[4].image = self.loadimageB
                 self.buttons_list[3].config(image = self.loadimageA)
-
-"""def movement(self,event):
-        print(event)
-        btn = event.widget
-        print(btn.image)
-        if(btn.image == self.loadimageV):
-            print('pyimage 1 = vermelho')
-        btn_place = self.buttons_list.index(btn)
-        btn.config(image=self.loadimageB)
-        if(btn_place == self.mapa.index("V1") or btn_place == self.mapa.index("V2")):
-            self.buttons_list[self.whitebtn].config(image=self.loadimageV)
-            #Atualizando a lista dos botoes, e em seguida, a lista do mapa.
-            #self.buttons_list[self.whitebtn], self.buttons_list[btn_place] = self.buttons_list[btn_place], self.buttons_list[self.whitebtn]
-            self.mapa[self.whitebtn], self.mapa[btn_place] = self.mapa[btn_place], self.mapa[self.whitebtn]
-            print(self.mapa)
-            self.whitebtn = btn_place
-            #Disabilitar os botões vermelhos
-            self.buttons_list[self.mapa.index("V1")].config(state = "disabled")
-            self.buttons_list[self.mapa.index("V2")].config(state = "disabled")
-        else:
-            self.buttons_list[self.whitebtn].config(image=self.loadimageA)
-        btn.config(image=self.loadimageB)
-        self.buttons_list[self.whitebtn].config(image=self.loadimageV)
-        self.whitebtn = btn_place
-        print(self.buttons_list[4])
-        print(self.buttons_list.index(btn))
-        print(self.buttons_list)"""
-
+                self.buttons_list[3].image = self.loadimageA
 
 root = Tk()
 #size of the window
