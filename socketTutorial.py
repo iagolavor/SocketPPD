@@ -1,6 +1,8 @@
 import socket
 import threading
 from queue import Queue
+from _thread import *
+
 
 """s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 print(s)
@@ -61,7 +63,7 @@ for worker in range(1,10000):
 
 q.join()"""
 
-"""#Binding and listening with sockets
+#Binding and listening with sockets
 import sys
 host = ''
 port = 7070
@@ -71,9 +73,35 @@ try:
 except socket.error as e:
     print(str(e))
 
-s.listen(5)
 
-con, addr = s.accept()
-print('connected to '+addr[0]+': '+str(addr[1])) """
+s.listen(5)
+print('waiting for connection')
+#Cliente de thread
+def threaded_client(connection):
+    connection.send(str.encode('Welcome, type your info\n'))
+    things = ""
+
+    while True:
+        #dados, qlqr coisa que receber
+        data = connection.recv(2048)
+        things = things+data.decode('utf-8')
+        for string in data.decode('utf-8'):
+            if(string == '\n'):
+                reply = "Server output: "+things
+                things = ""
+                connection.sendall(str.encode(reply))
+        #reply = 'Server output: '+data.decode('utf-8')
+        if not data:
+            break
+        #connection.sendall(str.encode(reply))
+    connection.close()
+
+while True:
+    con, addr = s.accept()
+    print('connected to '+addr[0]+': '+str(addr[1]))  
+    start_new_thread(threaded_client,(con,))
+
+#con, addr = s.accept()
+#print('connected to '+addr[0]+': '+str(addr[1])) 
 #Sistema de cliente-servidor com socket
 

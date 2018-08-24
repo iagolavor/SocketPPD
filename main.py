@@ -5,8 +5,7 @@ class Window(Frame):
 
     def __init__(self, master=None):
         Frame.__init__(self, master)   
-        self.buttons_list = []
-        self.whitebtn = 2        
+        self.buttons_list = []       
         self.master = master
         self.init_window()
         self.init_image()
@@ -21,11 +20,9 @@ class Window(Frame):
         self.pack()
     
     def init_button(self):
-        # creating a button instance
         self.loadimageV = PhotoImage(file="bolaV.png")
         self.loadimageA = PhotoImage(file="bolaA.png")
         self.loadimageB = PhotoImage(file="bolaBr.png")
-        #Link para criar botões arredondados : https://stackoverflow.com/questions/42579927/rounded-button-tkinter-python
         botaoV1 = Button(self, image=self.loadimageV, border=0, bg="white") #Adicionar comando com quitButton = Button(self, bg="x", ->command= helloCallBack <-)
         botaoV1.image = self.loadimageV
         botaoA1 = Button(self, image=self.loadimageA, border=0, bg="white")
@@ -37,13 +34,13 @@ class Window(Frame):
         botaoA2 = Button(self, image=self.loadimageA, border=0, bg="white")
         botaoA2.image = self.loadimageA
         self.buttons_list.extend([botaoV1, botaoA1, botaoBranco, botaoV2, botaoA2])
+        #Adicionando os eventos a cada botao
         botaoV1.bind("<Button-1>", self.movement)
         botaoV2.bind("<Button-1>", self.movement)
         botaoA1.bind("<Button-1>", self.movement)
         botaoA2.bind("<Button-1>", self.movement)
         botaoBranco.bind("<Button-1>", self.movement)
-        #botaoBranco.bind("<Button-1>", self.movement)
-        # placing the button on my window
+        #Colocando os botoes na janela
         botaoV1.place(x=5, y=6)
         botaoV2.place(x=300, y=6)
         botaoA1.place(x=5, y=295)
@@ -63,7 +60,7 @@ class Window(Frame):
     def send_message(self,event):
         input_get = self.input_field.get()
         print(input_get)
-        self.messages.insert(INSERT, '%s\n' % input_get)
+        self.messages.insert(INSERT, 'Jogador 1: %s\n' % input_get)
         self.input_user.set('')
         return "break"
     

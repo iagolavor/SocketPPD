@@ -1,3 +1,5 @@
+import socket
+
 class MySocket:
     """demonstration class only
       - coded for clarity, not efficiency
