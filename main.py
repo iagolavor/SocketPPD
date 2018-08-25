@@ -1,4 +1,6 @@
 from tkinter import *
+import socket
+import sys
 from PIL import Image, ImageTk
 
 class Window(Frame):
@@ -11,6 +13,7 @@ class Window(Frame):
         self.init_image()
         self.init_button()
         self.init_chat()
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         
     #Creation of init_window
     def init_window(self):
@@ -18,6 +21,12 @@ class Window(Frame):
         self.master.title("Jogo Chinês")
         # allowing the widget to take the full space of the root window
         self.pack()
+
+        my_menu = Menu(self.master)
+        self.master.config(menu=my_menu)
+        file = Menu(my_menu)
+        file.add_command(label='Conectar a servidor', command=self.connect_to_server)
+        my_menu.add_cascade(label='Menu', menu = file)
     
     def init_button(self):
         self.loadimageV = PhotoImage(file="bolaV.png")
@@ -90,6 +99,20 @@ class Window(Frame):
         }
         func = switch.get(argument, lambda: "Invalid")
         func()
+        self.my_send(self.buttons_list)
+
+    def connect_to_server(self):
+        print('to no connect')
+        host = socket.gethostbyname()
+        self.sock.connect((host,5000)) 
+    def my_send(self, msg):
+        self.sock.sendall(str.encode(msg))  
+        amount_received = 0
+        amount_expected = len(msg)
+        while(amount_expected<amount_received):
+            data = self.sock.recv(16)
+            amount_received =+ len(data)
+            print('received {!r}'.format(data))
     
     def pos_0(self):
         if(self.buttons_list[0].image == self.loadimageV):
