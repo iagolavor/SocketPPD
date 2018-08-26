@@ -1,4 +1,5 @@
 from tkinter import *
+import tkinter
 import socket
 import sys
 from PIL import Image, ImageTk
@@ -27,7 +28,8 @@ class Window(Frame):
         my_menu = Menu(self.master)
         self.master.config(menu=my_menu)
         file = Menu(my_menu)
-        file.add_command(label='Conectar a servidor', command=self.connect_to_server)
+        file.add_command(label='Conectar a servidor', command=self.menu_connect)
+        file.add_command(label="Reiniciar partida", command=self.reinicia_partida)
         my_menu.add_cascade(label='Menu', menu = file)
     
     def init_button(self):
@@ -83,6 +85,33 @@ class Window(Frame):
         img = Label(self, image=render)
         img.image = render
         img.grid(row=0,column=0)
+
+    def reinicia_partida(self):
+        win = tkinter.Toplevel()
+        win.wm_title("Reiniciar partida")
+        label1 = Label(win, text="Deseja reiniciar a partida?")
+        label1.grid(row=1, columnspan=2)
+        yes = Button(win, text="Sim", command=self.restart_board)
+        no = Button(win, text="Não", command=win.destroy)
+        yes.grid(row=2, column=0)
+        no.grid(row=2, column=1)
+    
+    def restart_board(self):
+        self.buttons_list[0].config(image = self.loadimageV)
+        self.buttons_list[0].image = self.loadimageV
+        self.mapa[0] = "V1"
+        self.buttons_list[1].config(image = self.loadimageA)
+        self.buttons_list[1].image = self.loadimageA
+        self.mapa[1] = "A1"
+        self.buttons_list[2].config(image = self.loadimageB)
+        self.buttons_list[2].image = self.loadimageB
+        self.mapa[2] = "B"
+        self.buttons_list[3].config(image = self.loadimageV)
+        self.buttons_list[3].image = self.loadimageV
+        self.mapa[3] = "V2"
+        self.buttons_list[4].config(image = self.loadimageA)
+        self.buttons_list[4].image = self.loadimageA
+        self.mapa[4] = "A2"
     
     def movement(self,event):
         #Chama a função switcher para escolher qual botao rodar
@@ -104,20 +133,39 @@ class Window(Frame):
         #data = pickle.dumps(self.buttons_list)
         self.my_send(self.mapa)
 
-    def connect_to_server(self):
-        print('to no connect')
-        self.sock.connect(('localhost',5000)) 
+    def menu_connect(self):
+        input_port = StringVar()
+        input_host = StringVar()
+        win = tkinter.Toplevel()
+        win.wm_title("Conectar a um Socket")
+        portLabel1 = Label(win, text="Porta: ")
+        hostLabel1 = Label(win, text="IP do servidor: ")
+        botaoOk = Button(win, text="Ok")
+        entryPort = Entry(win, text=input_port)
+        entryHost = Entry(win, text=input_host)
+        portLabel1.grid(row=1, column=1)
+        hostLabel1.grid(row=2, column=1)
+        entryPort.grid(row=1, column=2)
+        entryHost.grid(row=2, column=2)
+        botaoOk.grid(row=1, column=3, rowspan=2,columnspan=2)
+        botaoOk.bind("<Button-1>",self.conectar)
+        #self.sock.connect(('localhost',5000)) 
+    
+
     def my_send(self, msg):
         #msg = ''.join(msg)
-        new_msg = "'" + "','".join(map(str, msg)) + "'"
+        #new_msg = "'" + "','".join(map(str, msg)) + "'" 
+        new_msg = ' '.join(msg) #BA1V1V2A2
         print(new_msg)
         self.sock.sendall(str.encode(new_msg))  
         amount_received = 0
         amount_expected = len(msg)
         while(amount_expected<amount_received):
-            data = self.sock.recv(1024)
-            amount_received =+ len(data)
+            data = self.sock.recv(4096)
+            amount_received += len(data)
             print('received {!r}'.format(data))
+    #def my_receive(self):
+
     
     def pos_0(self):
         if(self.buttons_list[0].image == self.loadimageV):

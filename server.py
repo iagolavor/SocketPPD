@@ -4,6 +4,7 @@ from _thread import *
 import threading
 import sys
 import pickle
+import tkinter
 
 class Application(Frame):
     def __init__(self,master=None):
@@ -16,18 +17,13 @@ class Application(Frame):
         self.master.title("Configuração do servidor")
         self.pack()
     def init_layout(self):
-        self.input_port = StringVar()
-        self.input_host = StringVar()
+        input_port = StringVar()
         text = Label(self, text="Porta: ")
         text.grid(row = 1, column=1)
         #text1 = Label(self, text="IP host: ")
         #text1.grid(row=2, column=1)
-        self.entryPort = Entry(self, text=self.input_port)
+        self.entryPort = Entry(self, text=input_port)
         self.entryPort.grid(row = 1, column=2)
-        self.entryPort.bind("<Return>", self.get_port)
-        #self.entryHost = Entry(self, text=self.input_host)
-        #self.entryHost.grid(row = 2, column=2)
-        #self.entryHost.bind("<Return>", self.get_port)
         botaoOk = Button(self, text="OK")
         botaoOk.grid(row = 1, column=3, rowspan=2, columnspan=2)
         botaoOk.bind("<Button-1>", self.get_port)
@@ -40,10 +36,13 @@ class Application(Frame):
         self.inputPort = self.entryPort.get()
         #self.inputHost = self.entryHost.get()
         self.portLabel.config(text="Porta escolhida: "+self.inputPort)
-        print('aa')
-        #self.hostLabel.config(text="Host escolhido: "+self.inputHost)
+        self.hostLabel.config(text="Host escolhido: "+ socket.gethostbyname("localhost"))
+        #Atualiza o frame do servidor para mostrar a porta e o IP dele
+        self.master.update()
         #Conecta à porta e IP estabelecidos
         host = socket.gethostbyname("localhost")
+        print("IP do servidor: "+ host)
+        print("Porta do servidor: "+ str(self.inputPort))
         self.connect(host,self.inputPort)
     def connect(self,host,port):
         self.sock.bind((host,int(port)))
@@ -54,10 +53,12 @@ class Application(Frame):
                 print('conexao de address')
                 while True:
                     data = client.recv(4096)
-                    print('recebido {!r}'.format(data))
                     if data:
                         response = data.decode('utf-8')
-                        client.sendall(response)
+                        print(response)
+                        new_response = response.split()
+                        print(new_response)
+                        client.sendall(str.encode(response))
                     else:
                         break
             finally:
@@ -75,29 +76,6 @@ class Application(Frame):
         except:
             print('entrou except')"""
         
-    def listenToClient(self, client, address):
-        size = 1024
-        totalsent = 0
-        
-
-        while True:
-            try:
-                data = pickle.loads(client.recv(1024))
-                data = client.recv(size)
-                if data:
-                    #Colocar a resposta para fazer um echo com data
-                    response = data.decode('utf-8')
-                    client.send(response)
-                else:
-                    raise error('Client disconnected')
-            except:
-                client.close()
-                return False
-    """def listen_to_client(self, client, address):
-        size = 1024
-        while True:
-            try:
-                data = client.recv(size)"""
 
 root = Tk()
 #root.geometry("200x100")
