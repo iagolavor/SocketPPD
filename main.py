@@ -2,11 +2,13 @@ from tkinter import *
 import socket
 import sys
 from PIL import Image, ImageTk
+import pickle
 
 class Window(Frame):
 
     def __init__(self, master=None):
-        Frame.__init__(self, master)   
+        Frame.__init__(self, master)  
+        self.mapa = ["V1","A1","B","V2","A2"] 
         self.buttons_list = []       
         self.master = master
         self.init_window()
@@ -99,18 +101,21 @@ class Window(Frame):
         }
         func = switch.get(argument, lambda: "Invalid")
         func()
-        self.my_send(self.buttons_list)
+        #data = pickle.dumps(self.buttons_list)
+        self.my_send(self.mapa)
 
     def connect_to_server(self):
         print('to no connect')
-        host = socket.gethostbyname()
-        self.sock.connect((host,5000)) 
+        self.sock.connect(('localhost',5000)) 
     def my_send(self, msg):
-        self.sock.sendall(str.encode(msg))  
+        #msg = ''.join(msg)
+        new_msg = "'" + "','".join(map(str, msg)) + "'"
+        print(new_msg)
+        self.sock.sendall(str.encode(new_msg))  
         amount_received = 0
         amount_expected = len(msg)
         while(amount_expected<amount_received):
-            data = self.sock.recv(16)
+            data = self.sock.recv(1024)
             amount_received =+ len(data)
             print('received {!r}'.format(data))
     
@@ -121,22 +126,26 @@ class Window(Frame):
                 self.buttons_list[0].image = self.loadimageB
                 self.buttons_list[1].config(image = self.loadimageV)
                 self.buttons_list[0].image = self.loadimageV
+                self.mapa[0], self.mapa[1] = self.mapa[1], self.mapa[0]
             elif(self.buttons_list[2].image == self.loadimageB):
                 self.buttons_list[0].config(image = self.loadimageB)
                 self.buttons_list[0].image = self.loadimageB
                 self.buttons_list[2].config(image = self.loadimageV)
                 self.buttons_list[2].image = self.loadimageV
+                self.mapa[0], self.mapa[2] = self.mapa[2], self.mapa[0]
         elif(self.buttons_list[0].image == self.loadimageA):
             if(self.buttons_list[1].image == self.loadimageB):
                     self.buttons_list[0].config(image = self.loadimageB)
                     self.buttons_list[0].image = self.loadimageB
                     self.buttons_list[1].config(image = self.loadimageA)
                     self.buttons_list[1].image = self.loadimageA
+                    self.mapa[0], self.mapa[1] = self.mapa[1], self.mapa[0]
             elif(self.buttons_list[2].image == self.loadimageB):
                     self.buttons_list[0].config(image = self.loadimageB)
                     self.buttons_list[0].image = self.loadimageB
                     self.buttons_list[2].config(image = self.loadimageA)
                     self.buttons_list[2].image = self.loadimageA
+                    self.mapa[0], self.mapa[2] = self.mapa[2], self.mapa[0]
         
     def pos_1(self):
         if(self.buttons_list[1].image == self.loadimageV):
@@ -145,32 +154,38 @@ class Window(Frame):
                 self.buttons_list[1].image = self.loadimageB
                 self.buttons_list[0].config(image = self.loadimageV)
                 self.buttons_list[0].image = self.loadimageV
+                self.mapa[0], self.mapa[1] = self.mapa[1], self.mapa[0]
             elif(self.buttons_list[2].image == self.loadimageB):
                 self.buttons_list[1].config(image = self.loadimageB)
                 self.buttons_list[1].image = self.loadimageB
                 self.buttons_list[2].config(image = self.loadimageV)
                 self.buttons_list[2].image = self.loadimageV
+                self.mapa[2], self.mapa[1] = self.mapa[1], self.mapa[2]
             elif(self.buttons_list[4].image == self.loadimageB):
                 self.buttons_list[1].config(image = self.loadimageB)
                 self.buttons_list[1].image = self.loadimageB
                 self.buttons_list[4].config(image = self.loadimageV)
                 self.buttons_list[4].image = self.loadimageV
+                self.mapa[4], self.mapa[1] = self.mapa[1], self.mapa[4]
         elif(self.buttons_list[1].image == self.loadimageA):
             if(self.buttons_list[0].image == self.loadimageB):
                 self.buttons_list[1].config(image = self.loadimageB)
                 self.buttons_list[1].image = self.loadimageB
                 self.buttons_list[0].config(image = self.loadimageA)
                 self.buttons_list[0].image = self.loadimageA
+                self.mapa[0], self.mapa[1] = self.mapa[1], self.mapa[0]
             elif(self.buttons_list[2].image == self.loadimageB):
                 self.buttons_list[1].config(image = self.loadimageB)
                 self.buttons_list[1].image = self.loadimageB
                 self.buttons_list[2].config(image = self.loadimageA)
                 self.buttons_list[2].image = self.loadimageA
+                self.mapa[2], self.mapa[1] = self.mapa[1], self.mapa[2]
             elif(self.buttons_list[4].image == self.loadimageB):
                 self.buttons_list[1].config(image = self.loadimageB)
                 self.buttons_list[1].image = self.loadimageB
                 self.buttons_list[4].config(image = self.loadimageA)
                 self.buttons_list[4].image = self.loadimageA
+                self.mapa[4], self.mapa[1] = self.mapa[1], self.mapa[4]
         
     def pos_2(self):
         if(self.buttons_list[2].image == self.loadimageV):
@@ -179,42 +194,50 @@ class Window(Frame):
                 self.buttons_list[2].image = self.loadimageB
                 self.buttons_list[0].config(image = self.loadimageV)
                 self.buttons_list[0].image = self.loadimageV
+                self.mapa[0], self.mapa[2] = self.mapa[2], self.mapa[0]
             elif(self.buttons_list[1].image == self.loadimageB):
                 self.buttons_list[2].config(image = self.loadimageB)
                 self.buttons_list[2].image = self.loadimageB
                 self.buttons_list[1].config(image = self.loadimageV)
                 self.buttons_list[1].image = self.loadimageV
+                self.mapa[2], self.mapa[1] = self.mapa[1], self.mapa[2]
             elif(self.buttons_list[3].image == self.loadimageB):
                 self.buttons_list[2].config(image = self.loadimageB)
                 self.buttons_list[2].image = self.loadimageB
                 self.buttons_list[3].config(image = self.loadimageV)
                 self.buttons_list[3].image = self.loadimageV
+                self.mapa[2], self.mapa[3] = self.mapa[3], self.mapa[2]
             elif(self.buttons_list[4].image == self.loadimageB):
                 self.buttons_list[2].config(image = self.loadimageB)
                 self.buttons_list[2].image = self.loadimageB
                 self.buttons_list[4].config(image = self.loadimageV)
                 self.buttons_list[4].image = self.loadimageV
+                self.mapa[4], self.mapa[2] = self.mapa[2], self.mapa[4]
         elif(self.buttons_list[2].image == self.loadimageA):
             if(self.buttons_list[0].image == self.loadimageB):
                 self.buttons_list[2].config(image = self.loadimageB)
                 self.buttons_list[2].image = self.loadimageB
                 self.buttons_list[0].config(image = self.loadimageA)
                 self.buttons_list[0].image = self.loadimageA
+                self.mapa[0], self.mapa[2] = self.mapa[2], self.mapa[0]
             elif(self.buttons_list[1].image == self.loadimageB):
                 self.buttons_list[2].config(image = self.loadimageB)
                 self.buttons_list[2].image = self.loadimageB
                 self.buttons_list[1].config(image = self.loadimageA)
                 self.buttons_list[1].image = self.loadimageA
+                self.mapa[2], self.mapa[1] = self.mapa[1], self.mapa[2]
             elif(self.buttons_list[3].image == self.loadimageB):
                 self.buttons_list[2].config(image = self.loadimageB)
                 self.buttons_list[2].image = self.loadimageB
                 self.buttons_list[3].config(image = self.loadimageA)
                 self.buttons_list[3].image = self.loadimageA
+                self.mapa[2], self.mapa[3] = self.mapa[3], self.mapa[2]
             elif(self.buttons_list[4].image == self.loadimageB):
                 self.buttons_list[2].config(image = self.loadimageB)
                 self.buttons_list[2].image = self.loadimageB
                 self.buttons_list[4].config(image = self.loadimageA)
                 self.buttons_list[4].image = self.loadimageA
+                self.mapa[2], self.mapa[4] = self.mapa[4], self.mapa[2]
     def pos_3(self):
         if(self.buttons_list[3].image == self.loadimageV):
             if(self.buttons_list[2].image == self.loadimageB):
@@ -222,22 +245,26 @@ class Window(Frame):
                 self.buttons_list[3].image = self.loadimageB
                 self.buttons_list[2].config(image = self.loadimageV)
                 self.buttons_list[2].image = self.loadimageV
+                self.mapa[3], self.mapa[2] = self.mapa[2], self.mapa[3]
             elif(self.buttons_list[4].image == self.loadimageB):
                 self.buttons_list[3].config(image = self.loadimageB)
                 self.buttons_list[3].image = self.loadimageB
                 self.buttons_list[4].config(image = self.loadimageV)
                 self.buttons_list[4].image = self.loadimageV
+                self.mapa[3], self.mapa[4] = self.mapa[4], self.mapa[3]
         elif(self.buttons_list[3].image == self.loadimageA):
             if(self.buttons_list[2].image == self.loadimageB):
                 self.buttons_list[3].config(image = self.loadimageB)
                 self.buttons_list[3].image = self.loadimageB
                 self.buttons_list[2].config(image = self.loadimageA)
                 self.buttons_list[2].image = self.loadimageA
+                self.mapa[3], self.mapa[2] = self.mapa[2], self.mapa[3]
             elif(self.buttons_list[4].image == self.loadimageB):
                 self.buttons_list[3].config(image = self.loadimageB)
                 self.buttons_list[3].image = self.loadimageB
                 self.buttons_list[4].config(image = self.loadimageA)
                 self.buttons_list[4].image = self.loadimageA
+                self.mapa[4], self.mapa[3] = self.mapa[3], self.mapa[4]
         
     def pos_4(self):
         if(self.buttons_list[4].image == self.loadimageV):
@@ -246,32 +273,38 @@ class Window(Frame):
                 self.buttons_list[4].image = self.loadimageB
                 self.buttons_list[1].config(image = self.loadimageV)
                 self.buttons_list[1].image = self.loadimageV
+                self.mapa[4], self.mapa[1] = self.mapa[1], self.mapa[4]
             elif(self.buttons_list[2].image == self.loadimageB):
                 self.buttons_list[4].config(image = self.loadimageB)
                 self.buttons_list[4].image = self.loadimageB
                 self.buttons_list[2].config(image = self.loadimageV)
                 self.buttons_list[2].image = self.loadimageV
+                self.mapa[4], self.mapa[2] = self.mapa[2], self.mapa[4]
             elif(self.buttons_list[3].image == self.loadimageB):
                 self.buttons_list[4].config(image = self.loadimageB)
                 self.buttons_list[4].image = self.loadimageB
                 self.buttons_list[3].config(image = self.loadimageV)
                 self.buttons_list[3].image = self.loadimageV
+                self.mapa[4], self.mapa[3] = self.mapa[3], self.mapa[4]
         elif(self.buttons_list[4].image == self.loadimageA):
             if(self.buttons_list[1].image == self.loadimageB):
                 self.buttons_list[4].config(image = self.loadimageB)
                 self.buttons_list[4].image = self.loadimageB
                 self.buttons_list[1].config(image = self.loadimageA)
                 self.buttons_list[1].image = self.loadimageA
+                self.mapa[4], self.mapa[1] = self.mapa[1], self.mapa[4]
             elif(self.buttons_list[2].image == self.loadimageB):
                 self.buttons_list[4].config(image = self.loadimageB)
                 self.buttons_list[4].image = self.loadimageB
                 self.buttons_list[2].config(image = self.loadimageA)
                 self.buttons_list[2].image = self.loadimageA
+                self.mapa[4], self.mapa[2] = self.mapa[2], self.mapa[4]
             elif(self.buttons_list[3].image == self.loadimageB):
                 self.buttons_list[4].config(image = self.loadimageB)
                 self.buttons_list[4].image = self.loadimageB
                 self.buttons_list[3].config(image = self.loadimageA)
                 self.buttons_list[3].image = self.loadimageA
+                self.mapa[4], self.mapa[3] = self.mapa[3], self.mapa[4]
 
 root = Tk()
 #size of the window
