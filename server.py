@@ -12,6 +12,8 @@ class Application(Frame):
         self.master = master
         self.init_window()
         self.init_layout()
+        #self.sock = socket.socket()
+        #self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR,1)
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     def init_window(self):
         self.master.title("Configuração do servidor")
@@ -33,6 +35,7 @@ class Application(Frame):
         self.hostLabel.grid(row=4, column=2)
     #Evento que dispara quando clica no Ok
     def get_port(self,event):
+        self.inputPort = ""
         self.inputPort = self.entryPort.get()
         #self.inputHost = self.entryHost.get()
         self.portLabel.config(text="Porta escolhida: "+self.inputPort)
@@ -43,27 +46,60 @@ class Application(Frame):
         host = socket.gethostbyname("localhost")
         print("IP do servidor: "+ host)
         print("Porta do servidor: "+ str(self.inputPort))
-        self.connect(host,self.inputPort)
-    def connect(self,host,port):
-        self.sock.bind((host,int(port)))
-        self.sock.listen(1)
+        porta = int(self.inputPort)
+        self.connect(host,porta)
+    """def connect(self,host,port):
+        self.sock.bind((host,port))
+        self.sock.listen()
         while True:
             client, address = self.sock.accept()
             try:
-                print('conexao de address')
-                while True:
-                    data = client.recv(4096)
-                    if data:
-                        response = data.decode('utf-8')
-                        print(response)
-                        new_response = response.split()
-                        print(new_response)
-                        client.sendall(str.encode(response))
-                    else:
-                        break
+                print('conexao de address' + str(address))
+                data = client.recv(4096)
+                if data:
+                    response = data.decode('utf-8')
+                    print(response)
+                    new_response = response.split()
+                    print(new_response)
+                    client.sendall(str.encode(response))
+                else:
+                    break
             finally:
+                client.close()"""
+        
+    def listenToClient(self, client, address):
+        while True:
+            data = client.recv(4096)
+            if data:
+                response = data.decode('utf-8')
+                print(response)
+                new_response = response.split()
+                print(new_response)
+                client.sendall(str.encode(response))
+            else:
                 client.close()
-        """try:
+                break
+
+    #Novo connect com threads
+    def connect(self,host,port):
+        self.sock.bind((host,port))
+        self.sock.listen()
+        while True:
+            client, address = self.sock.accept()
+            threading.Thread(target=self.listenToClient, args=(client,address)).start()
+            
+    
+    
+
+
+root = Tk()
+#root.geometry("200x100")
+app = Application(root)
+root.mainloop()
+
+
+
+"""try:
             print('1')
             self.sock.bind((host, int(port)))
             print('2')
@@ -75,9 +111,3 @@ class Application(Frame):
                 threading.Thread(target = self.listenToClient, args=(socket, address)).start()
         except:
             print('entrou except')"""
-        
-
-root = Tk()
-#root.geometry("200x100")
-app = Application(root)
-root.mainloop()

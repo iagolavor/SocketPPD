@@ -112,6 +112,7 @@ class Window(Frame):
         self.buttons_list[4].config(image = self.loadimageA)
         self.buttons_list[4].image = self.loadimageA
         self.mapa[4] = "A2"
+        #sendmsg contendo o mapa do jogo para o servidor
     
     def movement(self,event):
         #Chama a função switcher para escolher qual botao rodar
@@ -141,16 +142,20 @@ class Window(Frame):
         portLabel1 = Label(win, text="Porta: ")
         hostLabel1 = Label(win, text="IP do servidor: ")
         botaoOk = Button(win, text="Ok")
-        entryPort = Entry(win, text=input_port)
-        entryHost = Entry(win, text=input_host)
+        self.entryPort = Entry(win, text=input_port)
+        self.entryHost = Entry(win, text=input_host)
         portLabel1.grid(row=1, column=1)
         hostLabel1.grid(row=2, column=1)
-        entryPort.grid(row=1, column=2)
-        entryHost.grid(row=2, column=2)
+        self.entryPort.grid(row=1, column=2)
+        self.entryHost.grid(row=2, column=2)
         botaoOk.grid(row=1, column=3, rowspan=2,columnspan=2)
-        botaoOk.bind("<Button-1>",self.conectar)
-        #self.sock.connect(('localhost',5000)) 
+        botaoOk.bind("<Button-1>", self.conectar)
     
+    def conectar(self, event):
+        port = int(self.entryPort.get())
+        host = self.entryHost.get()
+        self.sock.connect((host, port))
+        print(event.widget)
 
     def my_send(self, msg):
         #msg = ''.join(msg)
