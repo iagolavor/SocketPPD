@@ -4,13 +4,16 @@ import socket
 import sys
 from PIL import Image, ImageTk
 import pickle
+from threading import *
+import select
 
 class Window(Frame):
 
     def __init__(self, master=None):
         Frame.__init__(self, master)  
         self.mapa = ["V1","A1","B","V2","A2"] 
-        self.buttons_list = []       
+        self.buttons_list = []   
+        self.player_name = ""    
         self.master = master
         self.init_window()
         self.init_image()
@@ -73,7 +76,8 @@ class Window(Frame):
     def send_message(self,event):
         input_get = self.input_field.get()
         print(input_get)
-        self.messages.insert(INSERT, 'Jogador 1: %s\n' % input_get)
+        #self.messages.insert(INSERT, '%s : %s\n' % self.player_name, input_get)
+        self.messages.insert(INSERT, self.player_name + ' : '+ input_get + '\n')
         self.input_user.set('')
         return "break"
     
@@ -132,45 +136,66 @@ class Window(Frame):
         func = switch.get(argument, lambda: "Invalid")
         func()
         #data = pickle.dumps(self.buttons_list)
-        self.my_send(self.mapa)
+        self.my_send()
+        
 
     def menu_connect(self):
         input_port = StringVar()
         input_host = StringVar()
+        input_name = StringVar()
         win = tkinter.Toplevel()
         win.wm_title("Conectar a um Socket")
         portLabel1 = Label(win, text="Porta: ")
         hostLabel1 = Label(win, text="IP do servidor: ")
+        nameLabel = Label(win, text="Nome: ")
         botaoOk = Button(win, text="Ok")
         self.entryPort = Entry(win, text=input_port)
         self.entryHost = Entry(win, text=input_host)
+        self.entryName = Entry(win, text=input_name)
         portLabel1.grid(row=1, column=1)
         hostLabel1.grid(row=2, column=1)
+        nameLabel.grid(row=3, column=1)
         self.entryPort.grid(row=1, column=2)
         self.entryHost.grid(row=2, column=2)
-        botaoOk.grid(row=1, column=3, rowspan=2,columnspan=2)
+        self.entryName.grid(row=3, column=2)
+        botaoOk.grid(row=1, column=3, rowspan=3,columnspan=2)
         botaoOk.bind("<Button-1>", self.conectar)
     
     def conectar(self, event):
+        self.player_name = self.entryName.get()
         port = int(self.entryPort.get())
         host = self.entryHost.get()
         self.sock.connect((host, port))
-        print(event.widget)
+        Thread(target = self.my_send).start()
+        Thread(target = self.my_receive).start()
+        
 
-    def my_send(self, msg):
-        #msg = ''.join(msg)
-        #new_msg = "'" + "','".join(map(str, msg)) + "'" 
-        new_msg = ' '.join(msg) #BA1V1V2A2
+    def my_send(self):
+        new_msg = ' '.join(self.mapa) #BA1V1V2A2
         print(new_msg)
         self.sock.sendall(str.encode(new_msg))  
-        amount_received = 0
-        amount_expected = len(msg)
-        while(amount_expected<amount_received):
-            data = self.sock.recv(4096)
-            amount_received += len(data)
-            print('received {!r}'.format(data))
-    #def my_receive(self):
-
+        print("bugouclient4?")
+        #data = self.sock.recv(1024).decode('utf-8')
+        #print("Recebido do servidor {!r}".format(data))
+        #amount_received = 0
+        #amount_expected = len(msg)
+        #while(amount_expected<amount_received):
+        #    data = self.sock.recv(16)
+        #    amount_received += len(data)
+        #    print('received {!r}'.format(data))
+    def my_receive(self):
+        self.sock.settimeout(1)
+        while True:
+            try:
+                data = self.sock.recv(1024).decode('utf-8')
+                print("to no receive",data)
+            except socket.timeout as e:
+                err = e.args[0]
+                if(err== 'time out'):
+                    sleep(1)
+                    print('recv time out')
+                    continue
+        
     
     def pos_0(self):
         if(self.buttons_list[0].image == self.loadimageV):

@@ -9,6 +9,8 @@ import tkinter
 class Application(Frame):
     def __init__(self,master=None):
         Frame.__init__(self,master)
+        self.clients = []
+        self.clients_lock = threading.Lock()
         self.master = master
         self.init_window()
         self.init_layout()
@@ -48,7 +50,59 @@ class Application(Frame):
         print("Porta do servidor: "+ str(self.inputPort))
         porta = int(self.inputPort)
         self.connect(host,porta)
-    """def connect(self,host,port):
+    
+        #Novo connect com threads
+    def connect(self,host,port):
+        self.sock.bind((host,port))
+        self.sock.listen()
+        while True:
+            client, address = self.sock.accept()
+            print("Conectado a: ",str(client), "address: ", str(address))
+            threading.Thread(target=self.listenToClient, args=(client,address)).start()
+
+    def listenToClient(self, client, address):
+        with self.clients_lock:
+            self.clients.append(client)
+        try:
+            while True:
+                data = client.recv(1024)
+                if data:
+                    response = data.decode('utf-8')
+                    print(response)
+                    new_response = response.split()
+                    print(new_response)
+                    with self.clients_lock:
+                        for c in self.clients:
+                            c.sendall(str.encode(response))
+                else:
+                    break
+        finally:
+            with self.clients_lock:
+                self.clients.remove(client)
+                client.close()
+
+root = Tk()
+#root.geometry("200x100")
+app = Application(root)
+root.mainloop()
+
+
+#Codigo legado
+
+"""try:
+            print('1')
+            self.sock.bind((host, int(port)))
+            print('2')
+            self.sock.listen(5)
+            while True:
+                print('crashou')
+                socket, address = self.sock.accept()
+                socket.settimeout(5)
+                threading.Thread(target = self.listenToClient, args=(socket, address)).start()
+        except:
+            print('entrou except')"""
+
+"""def connect(self,host,port):
         self.sock.bind((host,port))
         self.sock.listen()
         while True:
@@ -66,48 +120,3 @@ class Application(Frame):
                     break
             finally:
                 client.close()"""
-        
-    def listenToClient(self, client, address):
-        while True:
-            data = client.recv(4096)
-            if data:
-                response = data.decode('utf-8')
-                print(response)
-                new_response = response.split()
-                print(new_response)
-                client.sendall(str.encode(response))
-            else:
-                client.close()
-                break
-
-    #Novo connect com threads
-    def connect(self,host,port):
-        self.sock.bind((host,port))
-        self.sock.listen()
-        while True:
-            client, address = self.sock.accept()
-            threading.Thread(target=self.listenToClient, args=(client,address)).start()
-            
-    
-    
-
-
-root = Tk()
-#root.geometry("200x100")
-app = Application(root)
-root.mainloop()
-
-
-
-"""try:
-            print('1')
-            self.sock.bind((host, int(port)))
-            print('2')
-            self.sock.listen(5)
-            while True:
-                print('crashou')
-                socket, address = self.sock.accept()
-                socket.settimeout(5)
-                threading.Thread(target = self.listenToClient, args=(socket, address)).start()
-        except:
-            print('entrou except')"""
