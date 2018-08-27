@@ -74,12 +74,13 @@ class Window(Frame):
         self.input_field.grid(row=0,column=2, ipadx=150, sticky=S)
 
     def send_message(self,event):
+        #Evento para mandar mensagem para a caixa de TEXTO(CHAT) do jogo
+        #Em vez de escrever a mensagem diretamente, envia a mensagem para o servidor
+        #E então o servidor manda todo mundo escrever na caixa TEXTO(CHAT) a mensagem
         input_get = self.input_field.get()
-        print(input_get)
-        #self.messages.insert(INSERT, '%s : %s\n' % self.player_name, input_get)
-        self.messages.insert(INSERT, self.player_name + ' : '+ input_get + '\n')
+        self.full_message = self.player_name + " : " + input_get + '\n'
         self.input_user.set('')
-        return "break"
+        self.my_send_text(self.full_message)
     
     def init_image(self):
         load = Image.open("pong02.jpg")
@@ -136,7 +137,7 @@ class Window(Frame):
         func = switch.get(argument, lambda: "Invalid")
         func()
         #data = pickle.dumps(self.buttons_list)
-        self.my_send()
+        self.my_send_mapa()
         
 
     def menu_connect(self):
@@ -166,33 +167,46 @@ class Window(Frame):
         port = int(self.entryPort.get())
         host = self.entryHost.get()
         self.sock.connect((host, port))
-        Thread(target = self.my_send).start()
         Thread(target = self.my_receive).start()
         
 
-    def my_send(self):
+    def my_send_mapa(self):
+        #protocolo de mensagem de mapa
         new_msg = ' '.join(self.mapa) #BA1V1V2A2
-        print(new_msg)
-        self.sock.sendall(str.encode(new_msg))  
-        print("bugouclient4?")
-        #data = self.sock.recv(1024).decode('utf-8')
-        #print("Recebido do servidor {!r}".format(data))
-        #amount_received = 0
-        #amount_expected = len(msg)
-        #while(amount_expected<amount_received):
-        #    data = self.sock.recv(16)
-        #    amount_received += len(data)
-        #    print('received {!r}'.format(data))
+        new_msg = "MAP:" + new_msg
+        self.sock.sendall(str.encode(new_msg)) 
+    
+    def my_send_text(self, text):
+        #protocolo de mensagem de texto
+        text = "TXT:" + text
+        self.sock.sendall(str.encode(text))
+         
     def my_receive(self):
         self.sock.settimeout(1)
         while True:
             try:
                 data = self.sock.recv(1024).decode('utf-8')
-                print("to no receive",data)
+                print("to no receive ",data)
+                if(data[:4]=="TXT:"):
+                    print("teste do data[:4] : ",data[:4])
+                    self.messages.insert(INSERT, data[4:])
+                elif(data[:4]=="MAP:"):
+                    mapa = data[4:]
+                    print("mapa: ",mapa)
+                    mapa = mapa.split()
+                    for i in range(5):
+                        if(mapa[i] == 'V1' or mapa[i]=='V2'):
+                            self.buttons_list[i].config(image=self.loadimageV)
+                            self.buttons_list[i].image = self.loadimageV
+                        elif(mapa[i] == 'A1' or mapa[i]=='A2'):
+                            self.buttons_list[i].config(image=self.loadimageA)
+                            self.buttons_list[i].image = self.loadimageA
+                        elif(mapa[i]=='B'):
+                            self.buttons_list[i].config(image=self.loadimageB)
+                            self.buttons_list[i].image = self.loadimageB
             except socket.timeout as e:
                 err = e.args[0]
                 if(err== 'time out'):
-                    sleep(1)
                     print('recv time out')
                     continue
         
@@ -203,7 +217,7 @@ class Window(Frame):
                 self.buttons_list[0].config(image = self.loadimageB)
                 self.buttons_list[0].image = self.loadimageB
                 self.buttons_list[1].config(image = self.loadimageV)
-                self.buttons_list[0].image = self.loadimageV
+                self.buttons_list[1].image = self.loadimageV
                 self.mapa[0], self.mapa[1] = self.mapa[1], self.mapa[0]
             elif(self.buttons_list[2].image == self.loadimageB):
                 self.buttons_list[0].config(image = self.loadimageB)
