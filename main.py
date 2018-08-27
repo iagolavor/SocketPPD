@@ -6,11 +6,14 @@ from PIL import Image, ImageTk
 import pickle
 from threading import *
 import select
+from tkinter.messagebox import showinfo
 
 class Window(Frame):
 
     def __init__(self, master=None):
         Frame.__init__(self, master)  
+        self.turno = False
+        self.time = "vermelho"
         self.mapa = ["V1","A1","B","V2","A2"] 
         self.buttons_list = []   
         self.player_name = ""    
@@ -65,6 +68,7 @@ class Window(Frame):
 
     def init_chat(self):
         self.messages = Text(self, height="23", width="49")
+        self.messages.insert(INSERT, "Clique no Menu para conectar a um servidor e/ou reiniciar a partida")
         self.input_user = StringVar()
         self.input_field = Entry(self, text=self.input_user)
         self.label_user = Label(self, text="Chat: ")
@@ -117,13 +121,17 @@ class Window(Frame):
         self.buttons_list[4].config(image = self.loadimageA)
         self.buttons_list[4].image = self.loadimageA
         self.mapa[4] = "A2"
-        #sendmsg contendo o mapa do jogo para o servidor
+        self.my_send_mapa()
     
     def movement(self,event):
         #Chama a função switcher para escolher qual botao rodar
         btn = event.widget
         btn_place = self.buttons_list.index(btn)
-        self.switcher(btn_place)
+        if(self.turno):
+            self.turno = True
+            self.switcher(btn_place)
+        else:
+            showinfo("Aviso de Turno", "Espere a sua vez!")
 
     def switcher(self,argument):
         #De acordo com o argumento dado(lugar do botao do evento), chama a função apropriada
@@ -145,7 +153,7 @@ class Window(Frame):
         input_host = StringVar()
         input_name = StringVar()
         win = tkinter.Toplevel()
-        win.wm_title("Conectar a um Socket")
+        win.wm_title("Conectar a um Servidor")
         portLabel1 = Label(win, text="Porta: ")
         hostLabel1 = Label(win, text="IP do servidor: ")
         nameLabel = Label(win, text="Nome: ")
@@ -163,7 +171,8 @@ class Window(Frame):
         botaoOk.bind("<Button-1>", self.conectar)
     
     def conectar(self, event):
-        self.player_name = self.entryName.get()
+        #self.player_name = self.entryName.get()
+        self.turno = True
         port = int(self.entryPort.get())
         host = self.entryHost.get()
         self.sock.connect((host, port))
@@ -204,6 +213,16 @@ class Window(Frame):
                         elif(mapa[i]=='B'):
                             self.buttons_list[i].config(image=self.loadimageB)
                             self.buttons_list[i].image = self.loadimageB
+                    if(mapa[0]=='B'):
+                        if((mapa[1]=='V1' or mapa[1]=='V2') and (mapa[2]=='V2' or mapa[2]=='V1')):
+                            showinfo("O jogo acabou!", "Parabéns para o vencedor")
+                        elif((mapa[1]=='A1' or mapa[1]=='A2')and (mapa[2]=='A2' or mapa[2]=='A1')):
+                            showinfo("O jogo acabou!", "Parabéns para o vencedor")
+                    elif(mapa[3]=='B'):
+                        if((mapa[2]=='V1' or mapa[2]=='V2') and (mapa[4]=='V2' or mapa[4]=='V1')):
+                            showinfo("O jogo acabou!", "Parabéns para o vencedor")
+                        elif((mapa[2]=='A1' or mapa[2]=='A2')and (mapa[4]=='A2' or mapa[4]=='A1')):
+                            showinfo("O jogo acabou!", "Parabéns para o vencedor")
             except socket.timeout as e:
                 err = e.args[0]
                 if(err== 'time out'):
@@ -238,6 +257,8 @@ class Window(Frame):
                     self.buttons_list[2].config(image = self.loadimageA)
                     self.buttons_list[2].image = self.loadimageA
                     self.mapa[0], self.mapa[2] = self.mapa[2], self.mapa[0]
+        else:
+            showinfo("Error", "Movimento inválido!")
         
     def pos_1(self):
         if(self.buttons_list[1].image == self.loadimageV):
@@ -278,6 +299,8 @@ class Window(Frame):
                 self.buttons_list[4].config(image = self.loadimageA)
                 self.buttons_list[4].image = self.loadimageA
                 self.mapa[4], self.mapa[1] = self.mapa[1], self.mapa[4]
+        else:
+            showinfo("ERROR", "Movimento inválido!")
         
     def pos_2(self):
         if(self.buttons_list[2].image == self.loadimageV):
@@ -330,6 +353,8 @@ class Window(Frame):
                 self.buttons_list[4].config(image = self.loadimageA)
                 self.buttons_list[4].image = self.loadimageA
                 self.mapa[2], self.mapa[4] = self.mapa[4], self.mapa[2]
+        else:
+            showinfo("ERROR", "Movimento inválido!")
     def pos_3(self):
         if(self.buttons_list[3].image == self.loadimageV):
             if(self.buttons_list[2].image == self.loadimageB):
@@ -357,6 +382,8 @@ class Window(Frame):
                 self.buttons_list[4].config(image = self.loadimageA)
                 self.buttons_list[4].image = self.loadimageA
                 self.mapa[4], self.mapa[3] = self.mapa[3], self.mapa[4]
+        else:
+            showinfo("ERROR", "Movimento inválido!")
         
     def pos_4(self):
         if(self.buttons_list[4].image == self.loadimageV):
@@ -397,6 +424,8 @@ class Window(Frame):
                 self.buttons_list[3].config(image = self.loadimageA)
                 self.buttons_list[3].image = self.loadimageA
                 self.mapa[4], self.mapa[3] = self.mapa[3], self.mapa[4]
+        else:
+            showinfo("ERROR", "Movimento inválido!")
 
 root = Tk()
 #size of the window
